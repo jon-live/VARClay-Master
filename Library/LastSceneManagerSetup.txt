@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Scenes/VRClay.unity
+  isLoaded: 1
+  isActive: 1

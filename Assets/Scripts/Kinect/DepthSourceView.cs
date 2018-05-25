@@ -238,7 +238,6 @@ void Start()
 
     private void RefreshData(ushort[] depthData, int colorWidth, int colorHeight)
     {
-
         var frameDesc = _Sensor.DepthFrameSource.FrameDescription;
         float[,] heightMap = new float[512, 512];
         int w = 0;
@@ -247,19 +246,29 @@ void Start()
         int ny = Terrain.terrainData.heightmapHeight;
         float[,] heights = Terrain.terrainData.GetHeights(0, 0, nx, ny);
         // Remove marigins of test environment in room 6A by setting max(h)=300 and min(w)=175
+         
         for (h = 80;  h< 360; h+=1) {
             for (w = 180; w < 410; w+=1) {
-                if (heights[h + 60, w - 90] != 0 & Math.Abs(heightMap[h + 60, w - 90] - heights[h + 60, w - 90]) / heights[h + 60, w - 90] <= 0.2)
-//                    heightMap[h + 60, w - 90] = heights[h + 60, w - 90];
-                    heightMap[h + 60, w - 90] = 0;
-
+                if (heights[h + 60, w - 90] != 0 &
+                    Math.Abs(heightMap[h + 60, w - 90] - heights[h + 60, w - 90]) / heights[h + 60, w - 90] <= 0.2)
+                {
+                    heightMap[h + 60, w - 90] = heights[h + 60, w - 90];
+//                    heightMap[h + 60, w - 90] = 0;
+                }
                 else
+                {
 //                    heightMap[h + 60, w - 90] = (1f - ((depthData[w + (h * 512)] / 1000f)) + heights[h + 60, w - 90]) * 0.65f;
-                heightMap[h + 60, w - 90] = 0;
-                if (heightMap[h + 60, w -90] > 0.86f)
-              {
-                    heightMap[h + 60, w -90] = 0;
-               }
+                    heightMap[h + 60, w - 90] = heights[h + 60, w - 90];
+                }
+                
+
+
+
+//                if (heightMap[h + 60, w -90] > 0.86f)
+//              {
+//                  heightMap[h + 60, w - 90] = heights[h + 60, w - 90];
+//
+//               }
         //        //heightMap[h, w] = (depthData[w + (h * 512)]/2460 + heights[h, w]) * .2f;
             }
         }
