@@ -3,6 +3,8 @@ using System.Collections;
 using Windows.Kinect;
 using System.Linq; // used for Sum of array
 using System;
+using System.IO;
+
 
 public enum DepthViewMode
 {
@@ -185,6 +187,7 @@ void Start()
             RefreshData(_DepthManager.GetData(),
                 _ColorManager.ColorWidth,
                 _ColorManager.ColorHeight);
+
         }
         else
         {
@@ -238,75 +241,31 @@ void Start()
 
     private void RefreshData(ushort[] depthData, int colorWidth, int colorHeight)
     {
-        var frameDesc = _Sensor.DepthFrameSource.FrameDescription;
-        float[,] heightMap = new float[512, 512];
+        float[,] heightMap = new float[513, 513];
         int w = 0;
         int h = 0;
-        int nx = Terrain.terrainData.heightmapWidth;
+        int nx = Terrain.terrainData.heightmapWidth; 
         int ny = Terrain.terrainData.heightmapHeight;
-        float[,] heights = Terrain.terrainData.GetHeights(0, 0, nx, ny);
-        // Remove marigins of test environment in room 6A by setting max(h)=300 and min(w)=175
-         
+        float[,] heights = Terrain.terrainData.GetHeights(0, 0, nx, ny);       
+        // Remove marigins of test environment in room 6A by setting max(h)=300 and min(w)=175         
         for (h = 80;  h< 360; h+=1) {
             for (w = 180; w < 410; w+=1) {
-                if (heights[h + 60, w - 90] != 0 &
+                if ( heights[h + 60, w - 90] != 0 &&
                     Math.Abs(heightMap[h + 60, w - 90] - heights[h + 60, w - 90]) / heights[h + 60, w - 90] <= 0.2)
                 {
-                    heightMap[h + 60, w - 90] = heights[h + 60, w - 90];
-//                    heightMap[h + 60, w - 90] = 0;
+                    heightMap[h + 60, w - 90] = 0;
                 }
                 else
                 {
-//                    heightMap[h + 60, w - 90] = (1f - ((depthData[w + (h * 512)] / 1000f)) + heights[h + 60, w - 90]) * 0.65f;
-                    heightMap[h + 60, w - 90] = heights[h + 60, w - 90];
+                    heightMap[h + 60, w - 90] = (1f - ((depthData[w + (h * 513)] / 680f)) + heights[h + 60, w - 90]) * 0.65f;
                 }
-                
 
-
-
-//                if (heightMap[h + 60, w -90] > 0.86f)
-//              {
-//                  heightMap[h + 60, w - 90] = heights[h + 60, w - 90];
-//
-//               }
-        //        //heightMap[h, w] = (depthData[w + (h * 512)]/2460 + heights[h, w]) * .2f;
             }
         }
 
-        //Debug.Log(1f - depthData[200 + (200 * 512)] / 2460f);
-        //Debug.Log(depthData[200 + (200 * 512)]);
 
-        //Debug.Log(depthLookUp[depthData[200 + (200 * 512)]]); 
 
         Terrain.terrainData.SetHeights(0, 0, heightMap);
-
-        //ColorSpacePoint[] colorSpace = new ColorSpacePoint[depthData.Length];
-        //_Mapper.MapDepthFrameToColorSpace(depthData, colorSpace);
-
-        //for (int y = 0; y < frameDesc.Height; y += _DownsampleSize)
-        //{
-        //    for (int x = 0; x < frameDesc.Width; x += _DownsampleSize)
-        //    {
-        //        int indexX = x / _DownsampleSize;
-        //        int indexY = y / _DownsampleSize;
-        //        int smallIndex = (indexY * (frameDesc.Width / _DownsampleSize)) + indexX;
-
-        //        double avg = GetAvg(depthData, x, y, frameDesc.Width, frameDesc.Height);
-
-        //        avg = avg * _DepthScale;
-
-        //        _Vertices[smallIndex].z = (float)avg;
-
-        //        // Update UV mapping with CDRP
-        //        var colorSpacePoint = colorSpace[(y * frameDesc.Width) + x];
-        //        _UV[smallIndex] = new Vector2(colorSpacePoint.X / colorWidth, colorSpacePoint.Y / colorHeight);
-        //    }
-        //}
-
-        //_Mesh.vertices = _Vertices;
-        //_Mesh.uv = _UV;
-        //_Mesh.triangles = _Triangles;
-        //_Mesh.RecalculateNormals();
     }
  
 

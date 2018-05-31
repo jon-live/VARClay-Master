@@ -27,3 +27,9 @@ VARClay Multiple Player Game Master Client
 1. Download Oculus Rift Setup Software from [Oculus Website](https://www.oculus.com/setup/)
 2. Use the software to check connection status of Rift and configure safe zone following the guidance message.
 
+
+### Unity Assets
+- Standard Assets
+- Photon Networking
+- Recorder
+
